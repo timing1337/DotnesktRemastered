@@ -24,9 +24,22 @@ namespace DotnesktRemastered
         static unsafe void Main(string[] args)
         {
             //Logging
+            if (File.Exists("DotnesktLog.txt"))
+            {
+                File.Delete("DotnesktLog.txt");
+            }
             Log.Logger = new LoggerConfiguration()
                 .WriteTo.Console()
+                .WriteTo.File(
+                    "DotnesktLog.txt",
+                    outputTemplate: "[ {Timestamp:dd-MM-yyyy HH-mm-ss}    ] [{Level:u3}] {Message:lj}{NewLine}{Exception}",
+                    fileSizeLimitBytes: null,
+                    rollOnFileSizeLimit: false,
+                    shared: true,
+                    flushToDiskInterval: TimeSpan.FromSeconds(1)
+                )
                 .CreateLogger();
+
             var processes = Process.GetProcessesByName("Cordycep.CLI");
             if (processes.Length <= 0)
             {
@@ -45,7 +58,6 @@ namespace DotnesktRemastered
             Log.Information("Strings Address: {address:X}", Cordycep.StringsAddress);
             Log.Information("Game Directory: {directory}", Cordycep.GameDirectory);
             Log.Information("Flag: {flag}", string.Join(", ", Cordycep.Flags));
-
             switch (gameId)
             {
                 case "YAMYAMOK":
